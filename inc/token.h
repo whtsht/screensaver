@@ -1,3 +1,6 @@
+#ifndef TOKEN_H
+#define TOKEN_H
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -32,3 +35,7 @@ typedef struct {
 Stream* to_stream(FILE* fp);
 
 Token* tokenize(Stream* stream);
+
+void free_stream(Stream* stream);
+
+#endif

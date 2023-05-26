@@ -1,3 +1,6 @@
+#ifndef NODE_H
+#define NODE_H
+
 #include "token.h"
 
 typedef enum {
@@ -27,7 +30,9 @@ struct Node {
         BinaryOp binary;
         UnaryOp unary;
         int value;
-    } value;
+    } inner;
 };
 
-Node *number(Token *token);
+Node *node_number(Token *token);
+
+#endif

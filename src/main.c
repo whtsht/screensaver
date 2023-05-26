@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "../inc/lang.h"
+#include "../inc/node.h"
 
 int main() {
     FILE* fp;
@@ -10,8 +11,8 @@ int main() {
     Stream* stream = to_stream(fp);
 
     Token* token = tokenize(stream);
-    printf("%s\n", token->string);
-    printf("%s\n", token->next->string);
-    printf("%s\n", token->next->next->string);
-    printf("%s\n", token->next->next->next->string);
+    free_stream(stream);
+
+    Node* node = node_number(token);
+    printf("%d\n", node->inner.value);
 }
