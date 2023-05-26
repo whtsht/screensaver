@@ -8,7 +8,7 @@
 
 int main() {
     FILE* fp;
-    fp = fopen("./examples/simple.tur", "r");
+    fp = fopen("./tests/simple.tur", "r");
     Stream* stream = to_stream(fp);
 
     Token* token = tokenize(stream);

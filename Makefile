@@ -6,6 +6,8 @@ OBJDIR := obj
 BINDIR := bin
 LIBDIR := lib
 
+TESTDIR := tests
+
 EXE := $(BINDIR)/$(TARGET)
 SRC := $(wildcard $(SRCDIR)/*.c)
 OBJ := $(SRC:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -30,6 +32,11 @@ $(BINDIR) $(OBJDIR):
 
 run: $(TARGET)
 	@$(BINDIR)/$(TARGET) $(ARGS)
+
+
+test: $(wildcard tests/*.c) | $(wildcard src/*.c)
+	@gcc $(wildcard tests/*.c) $(filter-out src/main.c, $(wildcard src/*.c)) -o bin/test
+	@bin/test
 
 clean:
 	@$(RM) -rv $(BINDIR) $(OBJDIR)
