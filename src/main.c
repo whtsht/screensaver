@@ -13,11 +13,9 @@ int main() {
 
     Token* token = tokenize(stream);
     free_stream(stream);
-    printf("%d\n", token_len(token));
-
-    /* Node* node = node_expr(token); */
-    /* printf("%d\n", node->kind); */
 
     Instr* instr = gen_instrs(token);
-    printf("%d\n", instr->next->nodes[0]->inner.value);
+    printf("%s\n", instr->nodes[0]->inner.string);
+    printf("%s\n", instr->next->next->nodes[0]->inner.string);
+    printf("%s\n", instr->next->next->next->nodes[0]->inner.string);
 }

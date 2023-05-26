@@ -39,26 +39,39 @@ Instr* _instrs(Token* token) {
         if (check_kind(token, (TokenKind[]){TK_IDT, TK_COL, TK_SEP})) {
             Node** nodes = calloc(1, sizeof(Node**));
             nodes[0] = new_node(ND_STR, (InnerValue){.string = token->string});
-            token = (Token*)token_skip(token, 3);
+            token = token_skip(token, 3);
             cur = new_instr(cur, IN_LABEL, nodes);
             continue;
         }
 
         // Assign Instruction
-        if (check_kind(token, (TokenKind[]){TK_IDT, TK_EQL})) {
+        if (check_kind(token, (TokenKind[]){TK_IDT, TK__EQ})) {
             Node** nodes = calloc(1, sizeof(Node**));
-            Token* token_ = (Token*)token_skip(token, 2);
+            Token* token_ = token_skip(token, 2);
             nodes[0] = node_expr(token_);
 
             token_ = get_current_token();
             if (token_->kind == TK_SEP) {
                 cur = new_instr(cur, IN_ASSIGN, nodes);
-                token = (Token*)token_skip(token_, 1);
+                token = token_skip(token_, 1);
                 continue;
             }
         }
 
-        fprintf(stderr, "failed to compile\n");
+        // Goto Instruction
+        if (check_kind(token, (TokenKind[]){TK__GO, TK_IDT})) {
+            Token* token_ = (Token*)token_skip(token, 2);
+
+            if (token_->kind == TK_SEP || token_->kind == TK_EOF) {
+                Node** nodes = calloc(1, sizeof(Node**));
+                nodes[0] = new_node(ND_STR, (InnerValue){.string = token->next->string});
+                token = token_skip(token, 3);
+                cur = new_instr(cur, IN_GOTO, nodes);
+                continue;
+            }
+        }
+
+        fprintf(stderr, "failed to compile (%s)\n", token->string);
         exit(0);
     }
 

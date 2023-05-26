@@ -73,7 +73,7 @@ char* parse_digit(Stream* stream) {
     }
 }
 
-char* RESERVED_WORD[] = {"goto", "forward"};
+char* RESERVED_WORD[] = {"goto", "cgoto"};
 int RESERVED_WORD_LENGTH = sizeof(RESERVED_WORD) / sizeof(char*);
 
 int is_reserved(char* target) {
@@ -100,10 +100,6 @@ char* parse_ident(Stream* stream) {
                 return NULL;
             }
             str[i] = '\0';
-            if (is_reserved(str)) {
-                free(str);
-                return NULL;
-            }
             return str;
         }
     }
@@ -170,7 +166,7 @@ Token* tokenize(Stream* stream) {
             continue;
         }
         if (stream_peek(stream) == '=') {
-            cur = new_token(cur, TK_EQL, "=");
+            cur = new_token(cur, TK__EQ, "=");
             stream_next(stream);
             continue;
         }
@@ -182,12 +178,18 @@ Token* tokenize(Stream* stream) {
         }
 
         char* ident = parse_ident(stream);
+
         if (ident != NULL) {
-            cur = new_token(cur, TK_IDT, ident);
-            continue;
+            if (!strcmp(ident, "goto")) {
+                cur = new_token(cur, TK__GO, "goto");
+                continue;
+            } else {
+                cur = new_token(cur, TK_IDT, ident);
+                continue;
+            }
         }
 
-        fprintf(stderr, "failed to tokenize: (%c)", stream_peek(stream));
+        fprintf(stderr, "failed to tokenize: (%d)", stream_peek(stream));
         exit(0);
     }
 
@@ -206,7 +208,7 @@ int token_len(const Token* token) {
     return count;
 }
 
-const Token* token_skip(const Token* token, int n) {
+Token* token_skip(Token* token, int n) {
     for (int i = 0; i < n; i++) {
         token = token->next;
     }
