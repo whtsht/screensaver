@@ -18,6 +18,10 @@ Stream* to_stream(FILE* fp) {
     return stream;
 }
 
+void free_stream(Stream* stream) {
+    free(stream->string);
+}
+
 int stream_iseof(const Stream* stream) {
     return stream->current >= stream->size;
 }
