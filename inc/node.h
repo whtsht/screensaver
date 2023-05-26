@@ -9,6 +9,7 @@ typedef enum {
     ND_MUL,
     ND_DIV,
     ND_NUM,
+    ND_STR,
 } NodeKind;
 
 typedef struct Node Node;
@@ -29,6 +30,7 @@ union Inner {
     BinaryOp binary;
     UnaryOp unary;
     int value;
+    char *string;
 };
 
 struct Node {
@@ -39,5 +41,6 @@ struct Node {
 Node *node_number(Token *token);
 Node *node_add(Token *token);
 Node *node_expr(Token *token);
+Node *new_node(NodeKind kind, InnerValue inner);
 
 #endif

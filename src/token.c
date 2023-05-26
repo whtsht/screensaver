@@ -164,6 +164,11 @@ Token* tokenize(Stream* stream) {
             stream_next(stream);
             continue;
         }
+        if (stream_peek(stream) == ':') {
+            cur = new_token(cur, TK_COL, ":");
+            stream_next(stream);
+            continue;
+        }
 
         char* digit = parse_digit(stream);
         if (digit != NULL) {
@@ -173,7 +178,7 @@ Token* tokenize(Stream* stream) {
 
         char* ident = parse_ident(stream);
         if (ident != NULL) {
-            cur = new_token(cur, TK_NUM, ident);
+            cur = new_token(cur, TK_IDT, ident);
             continue;
         }
 
@@ -183,4 +188,15 @@ Token* tokenize(Stream* stream) {
 
     cur = new_token(cur, TK_EOF, "");
     return head.next;
+}
+
+int token_len(const Token* token) {
+    if (token == NULL) return 0;
+
+    int count = 0;
+    const Token* cur = token;
+    while ((cur = cur->next)) {
+        count += 1;
+    }
+    return count;
 }

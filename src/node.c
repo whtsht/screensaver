@@ -18,12 +18,8 @@ Node *node_number(Token *token) {
     return NULL;
 }
 
-int check_triple(Token *token) {
-    return (token != NULL && token->next != NULL && token->next->next != NULL);
-}
-
 Node *node_add(Token *token) {
-    if (!check_triple(token)) return NULL;
+    if (token_len(token) < 3) return NULL;
     Token *lhs_ = token;
     Token *op = lhs_->next;
     Token *rhs_ = op->next;
@@ -40,7 +36,7 @@ Node *node_add(Token *token) {
 }
 
 Node *node_sub(Token *token) {
-    if (!check_triple(token)) return NULL;
+    if (token_len(token) < 3) return NULL;
     Token *lhs_ = token;
     Token *op = lhs_->next;
     Token *rhs_ = op->next;

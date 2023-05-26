@@ -21,6 +21,9 @@ typedef struct Instr Instr;
 struct Instr {
     InstrKind kind;
     Node** nodes;
+    Instr* next;
 };
+
+Instr* gen_instrs(Token* token);
 
 #endif
