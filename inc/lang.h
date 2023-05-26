@@ -3,6 +3,13 @@
 
 typedef enum {
     TK_NUM,
+    TK_ADD,
+    TK_SUB,
+    TK_MUL,
+    TK_DIV,
+    TK_MOD,
+    TK_RPA,
+    TK_LPA,
     TK_EOF,
 } TokenKind;
 

@@ -20,11 +20,11 @@ Stream* to_stream(FILE* fp) {
     return stream;
 }
 
-int stream_iseof(Stream* stream) {
+int stream_iseof(const Stream* stream) {
     return stream->current >= stream->size;
 }
 
-char stream_peek(Stream* stream) {
+char stream_peek(const Stream* stream) {
     if (stream_iseof(stream)) {
         return EOF;
     }
@@ -77,10 +77,50 @@ Token* tokenize(Stream* stream) {
             stream_next(stream);
             continue;
         }
+        if (stream_peek(stream) == '+') {
+            cur = new_token(cur, TK_ADD, "+");
+            stream_next(stream);
+            continue;
+        }
+        if (stream_peek(stream) == '-') {
+            cur = new_token(cur, TK_SUB, "-");
+            stream_next(stream);
+            continue;
+        }
+        if (stream_peek(stream) == '*') {
+            cur = new_token(cur, TK_MUL, "*");
+            stream_next(stream);
+            continue;
+        }
+        if (stream_peek(stream) == '/') {
+            cur = new_token(cur, TK_DIV, "/");
+            stream_next(stream);
+            continue;
+        }
+        if (stream_peek(stream) == '%') {
+            cur = new_token(cur, TK_MOD, "%");
+            stream_next(stream);
+            continue;
+        }
+        if (stream_peek(stream) == '(') {
+            cur = new_token(cur, TK_LPA, "(");
+            stream_next(stream);
+            continue;
+        }
+        if (stream_peek(stream) == ')') {
+            cur = new_token(cur, TK_RPA, ")");
+            stream_next(stream);
+            continue;
+        }
+
         char* str = parse_digit(stream);
         if (str != NULL) {
             cur = new_token(cur, TK_NUM, str);
+            continue;
         }
+
+        fprintf(stderr, "failed to tokenize: (%c)", stream_peek(stream));
+        exit(0);
     }
 
     new_token(cur, TK_EOF, "");
