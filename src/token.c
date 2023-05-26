@@ -1,6 +1,7 @@
 #include "../inc/token.h"
 
 #include <ctype.h>
+#include <string.h>
 
 Stream* to_stream(FILE* fp) {
     fseek(fp, 0L, SEEK_END);
@@ -31,6 +32,10 @@ char stream_peek(const Stream* stream) {
         return EOF;
     }
     return stream->string[stream->current];
+}
+
+void stream_back(Stream* stream, int value) {
+    stream->current -= value;
 }
 
 void stream_next(Stream* stream) {
@@ -66,7 +71,42 @@ char* parse_digit(Stream* stream) {
             }
         }
     }
-    return str;
+}
+
+char* RESERVED_WORD[] = {"goto", "forward"};
+int RESERVED_WORD_LENGTH = sizeof(RESERVED_WORD) / sizeof(char*);
+
+int is_reserved(char* target) {
+    for (int i = 0; i < RESERVED_WORD_LENGTH; i++) {
+        if (strcmp(RESERVED_WORD[i], target) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+char* parse_ident(Stream* stream) {
+    char* str = calloc(20, sizeof(char));
+    int i = 0;
+    while (1) {
+        char c = stream_peek(stream);
+        if (isalpha(c)) {
+            str[i] = c;
+            i += 1;
+            stream_next(stream);
+        } else {
+            if (i == 0) {
+                free(str);
+                return NULL;
+            }
+            str[i] = '\0';
+            if (is_reserved(str)) {
+                free(str);
+                return NULL;
+            }
+            return str;
+        }
+    }
 }
 
 Token* tokenize(Stream* stream) {
@@ -125,9 +165,15 @@ Token* tokenize(Stream* stream) {
             continue;
         }
 
-        char* str = parse_digit(stream);
-        if (str != NULL) {
-            cur = new_token(cur, TK_NUM, str);
+        char* digit = parse_digit(stream);
+        if (digit != NULL) {
+            cur = new_token(cur, TK_NUM, digit);
+            continue;
+        }
+
+        char* ident = parse_ident(stream);
+        if (ident != NULL) {
+            cur = new_token(cur, TK_NUM, ident);
             continue;
         }
 
