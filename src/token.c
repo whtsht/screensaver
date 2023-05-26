@@ -181,6 +181,6 @@ Token* tokenize(Stream* stream) {
         exit(0);
     }
 
-    new_token(cur, TK_EOF, "");
+    cur = new_token(cur, TK_EOF, "");
     return head.next;
 }

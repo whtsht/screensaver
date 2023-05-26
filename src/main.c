@@ -13,6 +13,6 @@ int main() {
     Token* token = tokenize(stream);
     free_stream(stream);
 
-    Node* node = node_number(token);
-    printf("%d\n", node->inner.value);
+    Node* node = node_expr(token);
+    printf("%d\n", node->kind);
 }

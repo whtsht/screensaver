@@ -14,6 +14,7 @@ typedef enum {
 typedef struct Node Node;
 typedef struct BinaryOp BinaryOp;
 typedef struct UnaryOp UnaryOp;
+typedef union Inner InnerValue;
 
 struct BinaryOp {
     Node *lhs;
@@ -24,15 +25,19 @@ struct UnaryOp {
     Node *node;
 };
 
+union Inner {
+    BinaryOp binary;
+    UnaryOp unary;
+    int value;
+};
+
 struct Node {
     NodeKind kind;
-    union {
-        BinaryOp binary;
-        UnaryOp unary;
-        int value;
-    } inner;
+    InnerValue inner;
 };
 
 Node *node_number(Token *token);
+Node *node_add(Token *token);
+Node *node_expr(Token *token);
 
 #endif
