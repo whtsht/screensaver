@@ -10,6 +10,7 @@ typedef enum {
     TK_MOD,
     TK_RPA,
     TK_LPA,
+    TK_SEP,
     TK_EOF,
 } TokenKind;
 

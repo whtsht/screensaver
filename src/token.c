@@ -71,7 +71,17 @@ Token* tokenize(Stream* stream) {
     Token* cur = &head;
 
     while (!stream_iseof(stream)) {
-        if (stream_peek(stream) == ' ' || stream_peek(stream) == '\n') {
+        if (stream_peek(stream) == ' ') {
+            stream_next(stream);
+            continue;
+        }
+        if (stream_peek(stream) == '\n') {
+            cur = new_token(cur, TK_SEP, "\n");
+            stream_next(stream);
+            continue;
+        }
+        if (stream_peek(stream) == ';') {
+            cur = new_token(cur, TK_SEP, ";");
             stream_next(stream);
             continue;
         }
