@@ -14,6 +14,7 @@ typedef enum {
     TK_RPA,
     TK_LPA,
     TK_IDT,
+    TK_EQL,
     TK_SEP,
     TK_COL,
     TK_EOF,
@@ -40,5 +41,9 @@ Token* tokenize(Stream* stream);
 void free_stream(Stream* stream);
 
 int token_len(const Token* token);
+
+const Token* token_skip(const Token* token, int n);
+
+void token_skip_mut(Token** token, int n);
 
 #endif

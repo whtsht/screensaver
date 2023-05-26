@@ -19,5 +19,5 @@ int main() {
     /* printf("%d\n", node->kind); */
 
     Instr* instr = gen_instrs(token);
-    printf("%s\n", instr->next->nodes[0]->inner.string);
+    printf("%d\n", instr->next->nodes[0]->inner.value);
 }

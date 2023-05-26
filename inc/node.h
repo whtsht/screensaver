@@ -42,5 +42,6 @@ Node *node_number(Token *token);
 Node *node_add(Token *token);
 Node *node_expr(Token *token);
 Node *new_node(NodeKind kind, InnerValue inner);
+Token *get_current_token();
 
 #endif

@@ -169,6 +169,11 @@ Token* tokenize(Stream* stream) {
             stream_next(stream);
             continue;
         }
+        if (stream_peek(stream) == '=') {
+            cur = new_token(cur, TK_EQL, "=");
+            stream_next(stream);
+            continue;
+        }
 
         char* digit = parse_digit(stream);
         if (digit != NULL) {
@@ -199,4 +204,19 @@ int token_len(const Token* token) {
         count += 1;
     }
     return count;
+}
+
+const Token* token_skip(const Token* token, int n) {
+    for (int i = 0; i < n; i++) {
+        token = token->next;
+    }
+    return token;
+}
+
+void token_skip_mut(Token** token, int n) {
+    Token* cur = *token;
+    for (int i = 0; i < n; i++) {
+        cur = cur->next;
+    }
+    *token = cur;
 }

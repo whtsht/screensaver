@@ -13,6 +13,20 @@ Instr* new_instr(Instr* current, InstrKind kind, Node** nodes) {
     return instr;
 }
 
+int check_kind(const Token* token, TokenKind* kinds) {
+    int t_len = token_len(token);
+    int k_len = ((int)sizeof(kinds) / (int)sizeof(TokenKind));
+    if (t_len < k_len) return 0;
+    const Token* cur = token;
+    for (int i = 0; i < k_len; i++) {
+        if (cur->kind != kinds[i]) {
+            return 0;
+        }
+        cur = cur->next;
+    }
+    return 1;
+}
+
 Instr* _instrs(Token* token) {
     if (token == NULL) return NULL;
 
@@ -21,18 +35,27 @@ Instr* _instrs(Token* token) {
     Instr* cur = &head;
 
     while (token->kind != TK_EOF) {
-        if (token_len(token) >= 2 &&
-            token->kind == TK_IDT &&
-            token->next->kind == TK_COL) {
+        // Label Instruction
+        if (check_kind(token, (TokenKind[]){TK_IDT, TK_COL, TK_SEP})) {
             Node** nodes = calloc(1, sizeof(Node**));
             nodes[0] = new_node(ND_STR, (InnerValue){.string = token->string});
-            token = token->next->next;
+            token = (Token*)token_skip(token, 3);
             cur = new_instr(cur, IN_LABEL, nodes);
+            continue;
         }
 
-        if (token->kind == TK_SEP) {
-            token = token->next;
-            continue;
+        // Assign Instruction
+        if (check_kind(token, (TokenKind[]){TK_IDT, TK_EQL})) {
+            Node** nodes = calloc(1, sizeof(Node**));
+            Token* token_ = (Token*)token_skip(token, 2);
+            nodes[0] = node_expr(token_);
+
+            token_ = get_current_token();
+            if (token_->kind == TK_SEP) {
+                cur = new_instr(cur, IN_ASSIGN, nodes);
+                token = (Token*)token_skip(token_, 1);
+                continue;
+            }
         }
 
         fprintf(stderr, "failed to compile\n");

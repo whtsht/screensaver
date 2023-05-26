@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+static Token *current_token = NULL;
+
+Token *get_current_token() {
+    return current_token;
+}
+
 Node *new_node(NodeKind kind, InnerValue inner) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
@@ -13,6 +19,7 @@ Node *new_node(NodeKind kind, InnerValue inner) {
 Node *node_number(Token *token) {
     if (token->kind == TK_NUM) {
         Node *node = new_node(ND_NUM, (InnerValue){.value = atoi(token->string)});
+        current_token = token->next;
         return node;
     }
     return NULL;
@@ -32,6 +39,7 @@ Node *node_add(Token *token) {
     if (rhs == NULL) return NULL;
 
     Node *node = new_node(ND_ADD, (InnerValue){.binary = {lhs, rhs}});
+    current_token = rhs_->next;
     return node;
 }
 
@@ -49,6 +57,7 @@ Node *node_sub(Token *token) {
     if (rhs == NULL) return NULL;
 
     Node *node = new_node(ND_SUB, (InnerValue){.binary = {lhs, rhs}});
+    current_token = rhs_->next;
     return node;
 }
 
