@@ -46,9 +46,10 @@ Instr* _instrs(Token* token) {
 
         // Assign Instruction
         if (check_kind(token, (TokenKind[]){TK_IDT, TK__EQ})) {
-            Node** nodes = calloc(1, sizeof(Node**));
+            Node** nodes = calloc(2, sizeof(Node**));
             Token* token_ = token_skip(token, 2);
-            nodes[0] = node_expr(token_);
+            nodes[0] = new_node(ND_STR, (InnerValue){.string = token->string});
+            nodes[1] = node_expr(token_);
 
             token_ = get_current_token();
             if (token_->kind == TK_SEP) {
@@ -78,11 +79,30 @@ Instr* _instrs(Token* token) {
     return head.next;
 }
 
-Instr* resolve_label(Instr* instrs) {
-    return instrs;
+int instr_len(const Instr* instrs) {
+    if (instrs == NULL) return 0;
+    int count = 0;
+    const Instr* cur = instrs;
+    while ((cur = cur->next)) {
+        count += 1;
+    }
+    return count;
 }
 
-Instr* gen_instrs(Token* token) {
+Instr** resolve_label(Instr* instrs) {
+    if (instrs == NULL) return NULL;
+
+    int len = instr_len(instrs);
+    Instr** instr_array = calloc(len, sizeof(Instr**));
+    Instr* cur = instrs;
+    int idx = 0;
+    do {
+        instr_array[idx++] = cur;
+    } while ((cur = cur->next));
+    return instr_array;
+}
+
+Instr** gen_instrs(Token* token) {
     Instr* instrs = _instrs(token);
     return resolve_label(instrs);
 }

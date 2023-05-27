@@ -1,1 +1,3 @@
+A:
 val = 10
+goto A

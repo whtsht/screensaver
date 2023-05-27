@@ -24,6 +24,6 @@ struct Instr {
     Instr* next;
 };
 
-Instr* gen_instrs(Token* token);
+Instr** gen_instrs(Token* token);
 
 #endif
