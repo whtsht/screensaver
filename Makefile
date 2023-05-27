@@ -34,8 +34,8 @@ run: $(TARGET)
 	@$(BINDIR)/$(TARGET) $(ARGS)
 
 
-test: $(wildcard tests/*.c) | $(wildcard src/*.c)
-	@gcc $(wildcard tests/*.c) $(filter-out src/main.c, $(wildcard src/*.c)) -o bin/test
+test: $(wildcard tests/*.c) $(filter-out src/main.c, $(wildcard src/*.c))
+	@gcc $^ -o bin/test
 	@bin/test
 
 clean:
