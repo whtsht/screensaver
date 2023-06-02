@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../inc/eval.h"
 #include "../inc/instructions.h"
+#include "../inc/node.h"
 #include "../inc/token.h"
 
 int strcmp_(char* s1, char* s2) {
@@ -12,10 +14,12 @@ int strcmp_(char* s1, char* s2) {
 
 void test_token();
 void test_instruction();
+void test_eval_node();
 
 int main() {
     test_token();
     test_instruction();
+    test_eval_node();
 }
 
 void test_token() {
@@ -49,15 +53,15 @@ void test_simple_instruction() {
     Token* token = tokenize(stream);
     free_stream(stream);
 
-    Instr** instrs = gen_instrs(token);
+    InstrList instrs = gen_instrs(token);
 
-    assert(instrs[0]->kind == IN_LABEL);
-    assert(strcmp_(instrs[0]->nodes[0]->inner.string, "A"));
-    assert(instrs[1]->kind == IN_ASSIGN);
-    assert(strcmp_(instrs[1]->nodes[0]->inner.string, "val"));
-    assert(instrs[1]->nodes[1]->inner.value == 10);
-    assert(instrs[2]->kind == IN_GOTO);
-    assert(strcmp_(instrs[2]->nodes[0]->inner.string, "A"));
+    assert(instrs.list[0]->kind == IN_LABEL);
+    assert(strcmp_(instrs.list[0]->nodes[0]->inner.string, "A"));
+    assert(instrs.list[1]->kind == IN_ASSIGN);
+    assert(strcmp_(instrs.list[1]->nodes[0]->inner.string, "val"));
+    assert(instrs.list[1]->nodes[1]->inner.value == 10);
+    assert(instrs.list[2]->kind == IN_GOTO);
+    assert(strcmp_(instrs.list[2]->nodes[0]->inner.string, "A"));
 
     fclose(fp);
 }
@@ -75,9 +79,26 @@ void test_call_instruction() {
     assert(token->next->next->kind == TK_NUM);
     assert(token->next->next->next->kind == TK_RPA);
 
-    Instr** instrs = gen_instrs(token);
+    InstrList instrs = gen_instrs(token);
 
-    assert(instrs[0]->kind == IN_CALL);
+    assert(instrs.list[0]->kind == IN_CALL);
+
+    fclose(fp);
+}
+
+void test_eval_node() {
+    FILE* fp;
+    fp = fopen("tests/simple.tur", "r");
+    Stream* stream = to_stream(fp);
+
+    Token* token = tokenize(stream);
+    free_stream(stream);
+
+    InstrList instrs = gen_instrs(token);
+
+    assert(instrs.list[1]->nodes[1]->inner.value == 10);
+    Env env = {0};
+    assert(evaluate_node(env, instrs.list[1]->nodes[1]) == 10);
 
     fclose(fp);
 }

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../inc/evel.h"
+#include "../inc/eval.h"
 #include "../inc/instructions.h"
 #include "../inc/lang.h"
 #include "../inc/node.h"
@@ -17,5 +17,5 @@ int main() {
 
     InstrList instr = gen_instrs(token);
     Env env = {0};
-    evalute_debug(env, instr);
+    evaluate_debug(env, instr);
 }

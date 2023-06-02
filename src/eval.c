@@ -1,6 +1,6 @@
-#include "../inc/evel.h"
+#include "../inc/eval.h"
 
-void evalute_debug(Env env, InstrList instr_list) {
+void evaluate(Env env, InstrList instr_list) {
     while (env.pc < instr_list.length) {
         switch (instr_list.list[env.pc]->kind) {
             case IN_CALL:
