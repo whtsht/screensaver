@@ -1,5 +1,15 @@
 #include "../inc/eval.h"
 
+int evaluate_node(Env env, Node* node) {
+    switch (node->kind) {
+        case ND_NUM:
+            return node->inner.value;
+        default:
+            fprintf(stderr, "failed to evaluate node\n");
+            exit(0);
+    }
+}
+
 void evaluate(Env env, InstrList instr_list) {
     while (env.pc < instr_list.length) {
         switch (instr_list.list[env.pc]->kind) {

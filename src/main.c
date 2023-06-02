@@ -3,16 +3,17 @@
 #include <string.h>
 
 #include "../inc/eval.h"
+#include "../inc/hashmap.h"
 #include "../inc/instructions.h"
 #include "../inc/lang.h"
 #include "../inc/node.h"
 
 int main() {
-    FILE* fp;
+    FILE *fp;
     fp = fopen("./examples/triangle.tur", "r");
-    Stream* stream = to_stream(fp);
+    Stream *stream = to_stream(fp);
 
-    Token* token = tokenize(stream);
+    Token *token = tokenize(stream);
     free_stream(stream);
 
     InstrList instr = gen_instrs(token);
