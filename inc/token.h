@@ -17,7 +17,9 @@ typedef enum {
     TK__EQ,
     TK__GO,
     TK_CGO,
+    TK_CAL,
     TK_SEP,
+    TK_COM,
     TK_COL,
     TK_EOF,
 } TokenKind;

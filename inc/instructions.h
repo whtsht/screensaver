@@ -10,8 +10,8 @@ typedef enum {
     IN_GOTO,
     // cgoto A a == b
     IN_COND_GOTO,
-    // forward(10)
-    IN_FUNC,
+    // call forward(10, 2)
+    IN_CALL,
     // val = 5
     IN_ASSIGN,
 } InstrKind;

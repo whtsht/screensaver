@@ -73,7 +73,7 @@ char* parse_digit(Stream* stream) {
     }
 }
 
-char* RESERVED_WORD[] = {"goto", "cgoto"};
+char* RESERVED_WORD[] = {"goto", "cgoto", "call"};
 int RESERVED_WORD_LENGTH = sizeof(RESERVED_WORD) / sizeof(char*);
 
 int is_reserved(char* target) {
@@ -170,6 +170,11 @@ Token* tokenize(Stream* stream) {
             stream_next(stream);
             continue;
         }
+        if (stream_peek(stream) == ',') {
+            cur = new_token(cur, TK_COM, ",");
+            stream_next(stream);
+            continue;
+        }
 
         char* digit = parse_digit(stream);
         if (digit != NULL) {
@@ -182,6 +187,9 @@ Token* tokenize(Stream* stream) {
         if (ident != NULL) {
             if (!strcmp(ident, "goto")) {
                 cur = new_token(cur, TK__GO, "goto");
+                continue;
+            } else if (!strcmp(ident, "call")) {
+                cur = new_token(cur, TK_CAL, "call");
                 continue;
             } else {
                 cur = new_token(cur, TK_IDT, ident);
