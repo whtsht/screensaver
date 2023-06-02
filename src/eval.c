@@ -13,6 +13,11 @@ int evaluate_node(Env* env, Node* node) {
             return node->inner.value;
         case ND_VAR:
             return find_var(env->vars, node->inner.string);
+        case ND_ADD: {
+            int lhs = evaluate_node(env, node->inner.binary.lhs);
+            int rhs = evaluate_node(env, node->inner.binary.rhs);
+            return lhs + rhs;
+        }
         default:
             fprintf(stderr, "failed to evaluate node\n");
             exit(0);

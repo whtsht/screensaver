@@ -1,6 +1,8 @@
 angle = 60
 length = 10
+count = 0
 A:
 rotate(angle)
 forward(length)
-goto A
+count = count + 1
+cgoto A 1

@@ -188,8 +188,8 @@ Token* tokenize(Stream* stream) {
             if (!strcmp(ident, "goto")) {
                 cur = new_token(cur, TK__GO, "goto");
                 continue;
-            } else if (!strcmp(ident, "call")) {
-                cur = new_token(cur, TK_CAL, "call");
+            } else if (!strcmp(ident, "cgoto")) {
+                cur = new_token(cur, TK_CGO, "goto");
                 continue;
             } else {
                 cur = new_token(cur, TK_IDT, ident);

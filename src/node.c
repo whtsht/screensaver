@@ -34,6 +34,17 @@ Node *node_var(Token *token) {
     return NULL;
 }
 
+Node *node_prim(Token *token) {
+    Node *node = NULL;
+    if ((node = node_number(token))) {
+        return node;
+    }
+    if ((node = node_var(token))) {
+        return node;
+    }
+    return NULL;
+}
+
 Node *node_add(Token *token) {
     if (token_len(token) < 3) return NULL;
     Token *lhs_ = token;
@@ -42,7 +53,7 @@ Node *node_add(Token *token) {
 
     if (strcmp(op->string, "+")) return NULL;
 
-    Node *lhs = node_number(lhs_);
+    Node *lhs = node_prim(lhs_);
     if (lhs == NULL) return NULL;
     Node *rhs = node_expr(rhs_);
     if (rhs == NULL) return NULL;
@@ -60,7 +71,7 @@ Node *node_sub(Token *token) {
 
     if (strcmp(op->string, "-")) return NULL;
 
-    Node *lhs = node_number(lhs_);
+    Node *lhs = node_prim(lhs_);
     if (lhs == NULL) return NULL;
     Node *rhs = node_expr(rhs_);
     if (rhs == NULL) return NULL;
@@ -78,10 +89,7 @@ Node *node_expr(Token *token) {
     if ((node = node_sub(token))) {
         return node;
     }
-    if ((node = node_number(token))) {
-        return node;
-    }
-    if ((node = node_var(token))) {
+    if ((node = node_prim(token))) {
         return node;
     }
     return NULL;

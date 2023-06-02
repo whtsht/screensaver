@@ -52,9 +52,10 @@ void assert_and_skip_token(Token** token, TokenKind kind) {
                 fprintf(stderr, "(");
                 break;
             default:
-                fprintf(stderr, "TokenKind: %d", kind);
+                fprintf(stderr, "TokenKind: %d (%s)\n", kind, (*token)->string);
         }
         fprintf(stderr, "`");
+        exit(1);
     }
 }
 
@@ -65,7 +66,7 @@ Instr* _instrs(Token* token) {
     head.next = NULL;
     Instr* cur = &head;
 
-    while (token->kind != TK_EOF) {
+    while (token != NULL) {
         // Label Instruction
         if (check_kind(token, (TokenKind[]){TK_IDT, TK_COL}, 2)) {
             Node** nodes = calloc(1, sizeof(Node**));
@@ -105,6 +106,21 @@ Instr* _instrs(Token* token) {
             }
         }
 
+        // Conditional Goto Instruction
+        if (check_kind(token, (TokenKind[]){TK_CGO}, 1)) {
+            Node** nodes = calloc(2, sizeof(Node**));
+            token = token_skip(token, 1);
+
+            nodes[0] = new_node(ND_STR, (InnerValue){.string = token->string});
+            token = token_skip(token, 1);
+
+            nodes[1] = node_expr(token);
+            token = get_current_token();
+            assert_and_skip_eol(&token);
+            cur = new_instr(cur, IN_COND_GOTO, nodes);
+            continue;
+        }
+
         // Call Instruction
         if (check_kind(token, (TokenKind[]){TK_IDT, TK_LPA}, 2)) {
             // number of arguments max 10
@@ -123,7 +139,7 @@ Instr* _instrs(Token* token) {
         }
 
         // Empty Line
-        assert_and_skip_token(&token, TK_SEP);
+        assert_and_skip_eol(&token);
         continue;
 
         fprintf(stderr, "failed to compile (%s)\n", token->string);

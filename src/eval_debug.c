@@ -35,6 +35,23 @@ void evaluate_debug(Env* env, InstrList instr_list) {
                 env->pc += 1;
                 break;
             }
+            case IN_COND_GOTO: {
+                int value = evaluate_node(env, cur_instr->nodes[1]);
+                if (value == 0) {
+                    env->pc += 1;
+                    break;
+                }
+                char* label = cur_instr->nodes[0]->inner.string;
+                int new_pc = find_label(instr_list, label);
+                if (new_pc != -1) {
+                    env->pc = new_pc;
+                    break;
+                } else {
+                    fprintf(stderr, "not found label %s\n", label);
+                    exit(1);
+                }
+                break;
+            }
             case IN_GOTO: {
                 char* label = cur_instr->nodes[0]->inner.string;
                 int new_pc = find_label(instr_list, label);
