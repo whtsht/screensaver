@@ -5,23 +5,28 @@
 #include <stdlib.h>
 
 typedef enum {
-    TK_NUM,
-    TK_ADD,
-    TK_SUB,
-    TK_MUL,
-    TK_DIV,
-    TK_MOD,
-    TK_RPA,
-    TK_LPA,
-    TK_IDT,
-    TK__EQ,
-    TK__GO,
-    TK_CGO,
-    TK_CAL,
-    TK_SEP,
-    TK_COM,
-    TK_COL,
-    TK_EOF,
+    TK_NUM,  // 0, 1, ..
+    TK_ADD,  // +
+    TK_SUB,  // -
+    TK_MUL,  // *
+    TK_DIV,  // /
+    TK_MOD,  // %
+    TK_RPA,  // )
+    TK_LPA,  // (
+    TK_IDT,  // xxx
+    TK__EQ,  // =
+    TK__GO,  // goto
+    TK_CGO,  // cgoto
+    TK_SEP,  // \n, ;
+    TK_COM,  // ,
+    TK_COL,  // :
+    TK_EOF,  // EOF
+    TK_EEQ,  // ==
+    TK_NEQ,  // !=
+    TK__GT,  // >
+    TK__LT,  // <
+    TK__GE,  // >=
+    TK__LE,  // <=
 } TokenKind;
 
 typedef struct Token Token;

@@ -34,6 +34,13 @@ char stream_peek(const Stream* stream) {
     return stream->string[stream->current];
 }
 
+char stream_peek_with_offset(const Stream* stream, int offset) {
+    if (stream_iseof(stream)) {
+        return EOF;
+    }
+    return stream->string[stream->current + offset];
+}
+
 void stream_back(Stream* stream, int value) {
     stream->current -= value;
 }
@@ -73,7 +80,7 @@ char* parse_digit(Stream* stream) {
     }
 }
 
-char* RESERVED_WORD[] = {"goto", "cgoto", "call"};
+char* RESERVED_WORD[] = {"goto", "cgoto"};
 int RESERVED_WORD_LENGTH = sizeof(RESERVED_WORD) / sizeof(char*);
 
 int is_reserved(char* target) {
@@ -165,15 +172,55 @@ Token* tokenize(Stream* stream) {
             stream_next(stream);
             continue;
         }
-        if (stream_peek(stream) == '=') {
-            cur = new_token(cur, TK__EQ, "=");
-            stream_next(stream);
-            continue;
-        }
         if (stream_peek(stream) == ',') {
             cur = new_token(cur, TK_COM, ",");
             stream_next(stream);
             continue;
+        }
+
+        if (stream_peek(stream) == '=') {
+            if (stream_peek_with_offset(stream, 1) == '=') {
+                cur = new_token(cur, TK_EEQ, "==");
+                stream_next(stream);
+                stream_next(stream);
+            } else {
+                cur = new_token(cur, TK__EQ, "=");
+                stream_next(stream);
+            }
+            continue;
+        }
+
+        if (stream_peek(stream) == '<') {
+            if (stream_peek_with_offset(stream, 1) == '=') {
+                cur = new_token(cur, TK__LE, "<=");
+                stream_next(stream);
+                stream_next(stream);
+            } else {
+                cur = new_token(cur, TK__LT, "<");
+                stream_next(stream);
+            }
+            continue;
+        }
+
+        if (stream_peek(stream) == '>') {
+            if (stream_peek_with_offset(stream, 1) == '=') {
+                cur = new_token(cur, TK__GE, ">=");
+                stream_next(stream);
+                stream_next(stream);
+            } else {
+                cur = new_token(cur, TK__GT, ">");
+                stream_next(stream);
+            }
+            continue;
+        }
+
+        if (stream_peek(stream) == '!') {
+            if (stream_peek_with_offset(stream, 1) == '=') {
+                cur = new_token(cur, TK_NEQ, "!=");
+                stream_next(stream);
+                stream_next(stream);
+                continue;
+            }
         }
 
         char* digit = parse_digit(stream);
@@ -189,7 +236,7 @@ Token* tokenize(Stream* stream) {
                 cur = new_token(cur, TK__GO, "goto");
                 continue;
             } else if (!strcmp(ident, "cgoto")) {
-                cur = new_token(cur, TK_CGO, "goto");
+                cur = new_token(cur, TK_CGO, "cgoto");
                 continue;
             } else {
                 cur = new_token(cur, TK_IDT, ident);

@@ -11,6 +11,8 @@ typedef enum {
     ND_NUM,
     ND_STR,
     ND_VAR,
+    ND_EEQ,
+    ND_NEQ,
 } NodeKind;
 
 typedef struct Node Node;

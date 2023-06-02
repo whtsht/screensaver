@@ -18,6 +18,16 @@ int evaluate_node(Env* env, Node* node) {
             int rhs = evaluate_node(env, node->inner.binary.rhs);
             return lhs + rhs;
         }
+        case ND_EEQ: {
+            int lhs = evaluate_node(env, node->inner.binary.lhs);
+            int rhs = evaluate_node(env, node->inner.binary.rhs);
+            return lhs == rhs;
+        }
+        case ND_NEQ: {
+            int lhs = evaluate_node(env, node->inner.binary.lhs);
+            int rhs = evaluate_node(env, node->inner.binary.rhs);
+            return lhs != rhs;
+        }
         default:
             fprintf(stderr, "failed to evaluate node\n");
             exit(0);

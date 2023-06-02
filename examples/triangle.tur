@@ -5,4 +5,4 @@ A:
 rotate(angle)
 forward(length)
 count = count + 1
-cgoto A 1
+cgoto A count != 3
