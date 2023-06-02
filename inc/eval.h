@@ -2,6 +2,7 @@
 #define EVAL_H
 
 #include "./instructions.h"
+#include "./stack.h"
 #include "./var.h"
 
 typedef struct {
@@ -9,8 +10,8 @@ typedef struct {
     int pc;
     // Variables
     VarStack* vars;
-    // Return Point
-    int return_point;
+    // Return Points
+    Stack* return_points;
 } Env;
 
 Env* env_new();

@@ -1,10 +1,12 @@
 #include "../inc/eval.h"
 
+#include "../inc/stack.h"
+
 Env* env_new() {
     Env* env = calloc(1, sizeof(Env));
     env->pc = 0;
     env->vars = new_var_stack();
-    env->return_point = -1;
+    env->return_points = stack_new();
     return env;
 }
 

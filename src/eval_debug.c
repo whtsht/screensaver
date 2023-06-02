@@ -51,7 +51,9 @@ void evaluate_debug(Env* env, InstrList instr_list) {
                 char* name = cur_instr->nodes[0]->inner.string;
                 printf("call %s\n", name);
                 if (!is_builtin(name)) {
-                    env->return_point = env->pc + 1;
+                    int* point = calloc(1, sizeof(int));
+                    *point = env->pc + 1;
+                    stack_push(env->return_points, point);
                     env->pc = find_func(instr_list, name);
                 } else {
                     env->pc += 1;
@@ -98,7 +100,8 @@ void evaluate_debug(Env* env, InstrList instr_list) {
             }
 
             case IN_FNDEF: {
-                if (env->return_point != -1) {
+                int* point = stack_top(env->return_points);
+                if (point != NULL) {
                     printf("enter function %s\n", cur_instr->nodes[0]->inner.string);
                     env->pc += 1;
                 } else {
@@ -109,10 +112,10 @@ void evaluate_debug(Env* env, InstrList instr_list) {
             }
 
             case IN_END: {
-                if (env->return_point != -1) {
+                int* point = stack_pop(env->return_points);
+                if (point != NULL) {
                     printf("exit function\n");
-                    env->pc = env->return_point;
-                    env->return_point = -1;
+                    env->pc = *point;
                 } else {
                     env->pc += 1;
                 }

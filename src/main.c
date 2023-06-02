@@ -7,6 +7,7 @@
 #include "../inc/instructions.h"
 #include "../inc/lang.h"
 #include "../inc/node.h"
+#include "../inc/stack.h"
 #include "../inc/var.h"
 
 int main() {
