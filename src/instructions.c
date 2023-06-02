@@ -122,6 +122,10 @@ Instr* _instrs(Token* token) {
             continue;
         }
 
+        // Empty Line
+        assert_and_skip_token(&token, TK_SEP);
+        continue;
+
         fprintf(stderr, "failed to compile (%s)\n", token->string);
         exit(0);
     }
@@ -131,7 +135,7 @@ Instr* _instrs(Token* token) {
 
 int instr_len(const Instr* instrs) {
     if (instrs == NULL) return 0;
-    int count = 0;
+    int count = 1;
     const Instr* cur = instrs;
     while ((cur = cur->next)) {
         count += 1;

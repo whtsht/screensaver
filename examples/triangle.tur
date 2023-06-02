@@ -1,2 +1,6 @@
 rotate(60)
-
+forward(10)
+rotate(60)
+forward(10)
+rotate(60)
+forward(10)
