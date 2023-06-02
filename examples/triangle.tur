@@ -1,10 +1,12 @@
-angle = 60
-length = 10
-count = 0
-putpen()
-penSetting(1, 2, 3)
-A:
-rotate(angle)
-forward(length)
-count = count + 1
-cgoto A count != 3
+def triangle(length)
+    count = 0
+    penDown()
+    A:
+    rotate(60)
+    forward(length)
+    count = count + 1
+    cgoto A count != 3
+    penUp()
+end
+
+triangle(10);

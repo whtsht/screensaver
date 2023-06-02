@@ -14,6 +14,10 @@ typedef enum {
     IN_CALL,
     // val = 5
     IN_ASSIGN,
+    // def xxx()
+    IN_FNDEF,
+    // end
+    IN_END
 } InstrKind;
 
 typedef struct Instr Instr;

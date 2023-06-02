@@ -4,6 +4,7 @@ Env* env_new() {
     Env* env = calloc(1, sizeof(Env));
     env->pc = 0;
     env->vars = new_var_stack();
+    env->return_point = -1;
     return env;
 }
 

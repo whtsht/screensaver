@@ -10,7 +10,37 @@ int find_label(InstrList instr_list, char* label_name) {
             }
         }
     }
-    return -1;
+    fprintf(stderr, "label (%s) not found\n", label_name);
+    exit(1);
+}
+
+int is_builtin(char* func_name) {
+    return strcmp("penDown", func_name) == 0 ||
+           strcmp("rotate", func_name) == 0 ||
+           strcmp("forward", func_name) == 0 ||
+           strcmp("penUp", func_name) == 0;
+}
+
+int find_func(InstrList instr_list, char* func_name) {
+    for (int i = 0; i < instr_list.length; i++) {
+        if (instr_list.list[i]->kind == IN_FNDEF) {
+            if (!strcmp(instr_list.list[i]->nodes[0]->inner.string, func_name)) {
+                return i;
+            }
+        }
+    }
+    fprintf(stderr, "function (%s) not found\n", func_name);
+    exit(1);
+}
+
+int find_end(InstrList instr_list, int pc) {
+    for (int i = pc; i < instr_list.length; i++) {
+        if (instr_list.list[i]->kind == IN_END) {
+            return i;
+        }
+    }
+    fprintf(stderr, "this function is not closed\n");
+    exit(1);
 }
 
 void evaluate_debug(Env* env, InstrList instr_list) {
@@ -18,14 +48,22 @@ void evaluate_debug(Env* env, InstrList instr_list) {
         Instr* cur_instr = instr_list.list[env->pc];
         switch (instr_list.list[env->pc]->kind) {
             case IN_CALL: {
-                printf("call %s\n", cur_instr->nodes[0]->inner.string);
-                env->pc += 1;
+                char* name = cur_instr->nodes[0]->inner.string;
+                printf("call %s\n", name);
+                if (!is_builtin(name)) {
+                    env->return_point = env->pc + 1;
+                    env->pc = find_func(instr_list, name);
+                } else {
+                    env->pc += 1;
+                }
                 break;
             }
+
             case IN_LABEL: {
                 env->pc += 1;
                 break;
             }
+
             case IN_ASSIGN: {
                 char* name = cur_instr->nodes[0]->inner.string;
                 printf("%s = %d\n", name, evaluate_node(env, cur_instr->nodes[1]));
@@ -34,6 +72,7 @@ void evaluate_debug(Env* env, InstrList instr_list) {
                 env->pc += 1;
                 break;
             }
+
             case IN_COND_GOTO: {
                 int value = evaluate_node(env, cur_instr->nodes[1]);
                 if (value == 0) {
@@ -42,15 +81,10 @@ void evaluate_debug(Env* env, InstrList instr_list) {
                 }
                 char* label = cur_instr->nodes[0]->inner.string;
                 int new_pc = find_label(instr_list, label);
-                if (new_pc != -1) {
-                    env->pc = new_pc;
-                    break;
-                } else {
-                    fprintf(stderr, "not found label %s\n", label);
-                    exit(1);
-                }
+                env->pc = new_pc;
                 break;
             }
+
             case IN_GOTO: {
                 char* label = cur_instr->nodes[0]->inner.string;
                 int new_pc = find_label(instr_list, label);
@@ -62,6 +96,29 @@ void evaluate_debug(Env* env, InstrList instr_list) {
                     exit(1);
                 }
             }
+
+            case IN_FNDEF: {
+                if (env->return_point != -1) {
+                    printf("enter function %s\n", cur_instr->nodes[0]->inner.string);
+                    env->pc += 1;
+                } else {
+                    int new_pc = find_end(instr_list, env->pc);
+                    env->pc = new_pc;
+                }
+                break;
+            }
+
+            case IN_END: {
+                if (env->return_point != -1) {
+                    printf("exit function\n");
+                    env->pc = env->return_point;
+                    env->return_point = -1;
+                } else {
+                    env->pc += 1;
+                }
+                break;
+            }
+
             default:
                 break;
         }

@@ -9,6 +9,8 @@ typedef struct {
     int pc;
     // Variables
     VarStack* vars;
+    // Return Point
+    int return_point;
 } Env;
 
 Env* env_new();

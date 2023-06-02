@@ -27,6 +27,8 @@ typedef enum {
     TK__LT,  // <
     TK__GE,  // >=
     TK__LE,  // <=
+    TK_DEF,  // def
+    TK_END,  // end
 } TokenKind;
 
 typedef struct Token Token;

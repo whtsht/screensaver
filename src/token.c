@@ -238,6 +238,12 @@ Token* tokenize(Stream* stream) {
             } else if (!strcmp(ident, "cgoto")) {
                 cur = new_token(cur, TK_CGO, "cgoto");
                 continue;
+            } else if (!strcmp(ident, "def")) {
+                cur = new_token(cur, TK_DEF, "def");
+                continue;
+            } else if (!strcmp(ident, "end")) {
+                cur = new_token(cur, TK_END, "end");
+                continue;
             } else {
                 cur = new_token(cur, TK_IDT, ident);
                 continue;
