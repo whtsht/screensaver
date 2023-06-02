@@ -124,14 +124,34 @@ Instr* _instrs(Token* token) {
         // Call Instruction
         if (check_kind(token, (TokenKind[]){TK_IDT, TK_LPA}, 2)) {
             // number of arguments max 10
-            Node** nodes = calloc(11, sizeof(Node**));
-            nodes[0] = new_node(ND_STR, (InnerValue){.string = token->string});
+            Node** nodes = calloc(12, sizeof(Node**));
+            char* name = token->string;
+            nodes[0] = new_node(ND_STR, (InnerValue){.string = name});
             token = token_skip(token, 2);
 
-            nodes[1] = node_expr(token);
-            token = get_current_token();
+            int idx = 2;
+            while (1) {
+                if (idx > 11) {
+                    fprintf(stderr, "number of arguments max 10 (%s)\n", name);
+                    exit(0);
+                }
 
-            assert_and_skip_token(&token, TK_RPA);
+                if (check_kind(token, (TokenKind[]){TK_RPA}, 1)) {
+                    token = token_skip(token, 1);
+                    break;
+                }
+
+                nodes[idx] = node_expr(token);
+                token = get_current_token();
+                idx += 1;
+
+                if (check_kind(token, (TokenKind[]){TK_COM}, 1)) {
+                    token = token_skip(token, 1);
+                }
+            }
+
+            // number of arguments
+            nodes[1] = new_node(ND_NUM, (InnerValue){.value = idx - 2});
 
             assert_and_skip_eol(&token);
             cur = new_instr(cur, IN_CALL, nodes);

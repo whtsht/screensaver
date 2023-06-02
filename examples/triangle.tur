@@ -1,6 +1,8 @@
 angle = 60
 length = 10
 count = 0
+putpen()
+penSetting(1, 2, 3)
 A:
 rotate(angle)
 forward(length)

@@ -18,8 +18,7 @@ void evaluate_debug(Env* env, InstrList instr_list) {
         Instr* cur_instr = instr_list.list[env->pc];
         switch (instr_list.list[env->pc]->kind) {
             case IN_CALL: {
-                int value = evaluate_node(env, cur_instr->nodes[1]);
-                printf("call %s(%d)\n", cur_instr->nodes[0]->inner.string, value);
+                printf("call %s\n", cur_instr->nodes[0]->inner.string);
                 env->pc += 1;
                 break;
             }
