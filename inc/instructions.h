@@ -24,6 +24,11 @@ struct Instr {
     Instr* next;
 };
 
-Instr** gen_instrs(Token* token);
+typedef struct {
+    Instr** list;
+    int length;
+} InstrList;
+
+InstrList gen_instrs(Token* token);
 
 #endif

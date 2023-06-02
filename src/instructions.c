@@ -156,7 +156,9 @@ Instr** resolve_label(Instr* instrs) {
     return instr_array;
 }
 
-Instr** gen_instrs(Token* token) {
+InstrList gen_instrs(Token* token) {
     Instr* instrs = _instrs(token);
-    return resolve_label(instrs);
+    int lenght = instr_len(instrs);
+    Instr** list = resolve_label(instrs);
+    return (InstrList){list, lenght};
 }
