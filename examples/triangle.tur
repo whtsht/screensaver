@@ -1,6 +1,6 @@
-rotate(60)
-forward(10)
-rotate(60)
-forward(10)
-rotate(60)
-forward(10)
+angle = 60
+length = 10
+A:
+rotate(angle)
+forward(length)
+goto A

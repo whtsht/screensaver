@@ -81,7 +81,7 @@ Instr* _instrs(Token* token) {
         if (check_kind(token, (TokenKind[]){TK_IDT, TK__EQ}, 2)) {
             Node** nodes = calloc(2, sizeof(Node**));
             Token* token_ = token_skip(token, 2);
-            nodes[0] = new_node(ND_STR, (InnerValue){.string = token->string});
+            nodes[0] = new_node(ND_VAR, (InnerValue){.string = token->string});
             nodes[1] = node_expr(token_);
 
             token_ = get_current_token();
@@ -143,7 +143,7 @@ int instr_len(const Instr* instrs) {
     return count;
 }
 
-Instr** resolve_label(Instr* instrs) {
+Instr** to_array(Instr* instrs) {
     if (instrs == NULL) return NULL;
 
     int len = instr_len(instrs);
@@ -159,6 +159,6 @@ Instr** resolve_label(Instr* instrs) {
 InstrList gen_instrs(Token* token) {
     Instr* instrs = _instrs(token);
     int lenght = instr_len(instrs);
-    Instr** list = resolve_label(instrs);
+    Instr** list = to_array(instrs);
     return (InstrList){list, lenght};
 }

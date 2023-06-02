@@ -25,6 +25,15 @@ Node *node_number(Token *token) {
     return NULL;
 }
 
+Node *node_var(Token *token) {
+    if (token->kind == TK_IDT) {
+        Node *node = new_node(ND_VAR, (InnerValue){.string = token->string});
+        current_token = token->next;
+        return node;
+    }
+    return NULL;
+}
+
 Node *node_add(Token *token) {
     if (token_len(token) < 3) return NULL;
     Token *lhs_ = token;
@@ -70,6 +79,9 @@ Node *node_expr(Token *token) {
         return node;
     }
     if ((node = node_number(token))) {
+        return node;
+    }
+    if ((node = node_var(token))) {
         return node;
     }
     return NULL;

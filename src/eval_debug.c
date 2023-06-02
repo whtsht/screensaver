@@ -1,18 +1,50 @@
+#include <string.h>
+
 #include "../inc/eval.h"
 
-void evaluate_debug(Env env, InstrList instr_list) {
-    while (env.pc < instr_list.length) {
-        Instr* cur_instr = instr_list.list[env.pc];
-        switch (instr_list.list[env.pc]->kind) {
+int find_label(InstrList instr_list, char* label_name) {
+    for (int i = 0; i < instr_list.length; i++) {
+        if (instr_list.list[i]->kind == IN_LABEL) {
+            if (!strcmp(instr_list.list[i]->nodes[0]->inner.string, label_name)) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
+void evaluate_debug(Env* env, InstrList instr_list) {
+    while (env->pc < instr_list.length) {
+        Instr* cur_instr = instr_list.list[env->pc];
+        switch (instr_list.list[env->pc]->kind) {
             case IN_CALL: {
                 int value = evaluate_node(env, cur_instr->nodes[1]);
-                printf("call %s(%d)\n", instr_list.list[env.pc]->nodes[0]->inner.string, value);
-                env.pc += 1;
+                printf("call %s(%d)\n", cur_instr->nodes[0]->inner.string, value);
+                env->pc += 1;
                 break;
             }
             case IN_LABEL: {
-                env.pc += 1;
+                env->pc += 1;
                 break;
+            }
+            case IN_ASSIGN: {
+                char* name = cur_instr->nodes[0]->inner.string;
+                printf("%s = %d\n", name, evaluate_node(env, cur_instr->nodes[1]));
+                int value = evaluate_node(env, cur_instr->nodes[1]);
+                set_var(env->vars, name, value);
+                env->pc += 1;
+                break;
+            }
+            case IN_GOTO: {
+                char* label = cur_instr->nodes[0]->inner.string;
+                int new_pc = find_label(instr_list, label);
+                if (new_pc != -1) {
+                    env->pc = new_pc;
+                    break;
+                } else {
+                    fprintf(stderr, "not found label %s\n", label);
+                    exit(1);
+                }
             }
             default:
                 break;

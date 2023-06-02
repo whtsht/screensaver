@@ -7,6 +7,7 @@
 #include "../inc/instructions.h"
 #include "../inc/lang.h"
 #include "../inc/node.h"
+#include "../inc/var.h"
 
 int main() {
     FILE *fp;
@@ -17,6 +18,6 @@ int main() {
     free_stream(stream);
 
     InstrList instr = gen_instrs(token);
-    Env env = {0};
+    Env *env = env_new();
     evaluate_debug(env, instr);
 }
