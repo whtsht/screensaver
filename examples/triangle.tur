@@ -2,11 +2,10 @@ def triangle(length)
     count = 0
     penDown()
     A:
-    rotate(60)
     forward(length)
     count = count + 1
     cgoto A count != 3
     penUp()
 end
 
-triangle(10);
+triangle(10)

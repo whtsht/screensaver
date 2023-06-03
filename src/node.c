@@ -16,13 +16,14 @@ Node *node_binary(Token *token, Node *(*func)(Token *), TokenKind token_kind, No
 
     if (op->kind != token_kind) return NULL;
 
+    current_token = rhs_->next;
+
     Node *lhs = func(lhs_);
     if (lhs == NULL) return NULL;
     Node *rhs = node_expr(rhs_);
     if (rhs == NULL) return NULL;
 
     Node *node = new_node(node_kind, (InnerValue){.binary = {lhs, rhs}});
-    current_token = rhs_->next;
     return node;
 }
 
@@ -78,6 +79,18 @@ Node *node_var(Token *token) {
     return NULL;
 }
 
+Node *node_parens(Token *token) {
+    if (token->kind == TK_LPA) {
+        Node *node = node_expr(token->next);
+        token = get_current_token();
+        if (node != NULL && token->kind == TK_RPA) {
+            current_token = token->next;
+            return node;
+        }
+    }
+    return NULL;
+}
+
 Node *node_add(Token *token) {
     return node_expr2_binary(token, TK_ADD, ND_ADD);
 }
@@ -100,6 +113,9 @@ Node *node_expr0(Token *token) {
         return node;
     }
     if ((node = node_var(token))) {
+        return node;
+    }
+    if ((node = node_parens(token))) {
         return node;
     }
     return NULL;

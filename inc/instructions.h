@@ -35,4 +35,6 @@ typedef struct {
 
 InstrList gen_instrs(Token* token);
 
+int check_kind(const Token* token, TokenKind* kinds, int length);
+
 #endif
