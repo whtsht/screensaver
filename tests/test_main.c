@@ -86,7 +86,15 @@ void test_call_instruction() {
     fclose(fp);
 }
 
+void test_eval_simple();
+void test_eval_expr();
+
 void test_eval_node() {
+    test_eval_simple();
+    test_eval_expr();
+}
+
+void test_eval_simple() {
     FILE* fp;
     fp = fopen("tests/simple.tur", "r");
     Stream* stream = to_stream(fp);
@@ -97,8 +105,33 @@ void test_eval_node() {
     InstrList instrs = gen_instrs(token);
 
     assert(instrs.list[1]->nodes[1]->inner.value == 10);
-    Env env = {0};
+    Env* env = env_new();
     assert(evaluate_node(env, instrs.list[1]->nodes[1]) == 10);
+
+    fclose(fp);
+}
+
+void test_expr(Node* node, int expect) {
+    Env* env = env_new();
+    int value = evaluate_node(env, node);
+    assert(expect == value);
+}
+
+void test_eval_expr() {
+    FILE* fp;
+    fp = fopen("tests/expr.tur", "r");
+    Stream* stream = to_stream(fp);
+
+    Token* token = tokenize(stream);
+    free_stream(stream);
+
+    InstrList instrs = gen_instrs(token);
+
+    test_expr(instrs.list[0]->nodes[1], 10);
+    test_expr(instrs.list[1]->nodes[1], 10);
+    test_expr(instrs.list[2]->nodes[1], 12);
+    test_expr(instrs.list[3]->nodes[1], 2);
+    test_expr(instrs.list[4]->nodes[1], -9);
 
     fclose(fp);
 }

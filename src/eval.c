@@ -21,6 +21,26 @@ int evaluate_node(Env* env, Node* node) {
             int rhs = evaluate_node(env, node->inner.binary.rhs);
             return lhs + rhs;
         }
+        case ND_SUB: {
+            int lhs = evaluate_node(env, node->inner.binary.lhs);
+            int rhs = evaluate_node(env, node->inner.binary.rhs);
+            return lhs - rhs;
+        }
+        case ND_MUL: {
+            int lhs = evaluate_node(env, node->inner.binary.lhs);
+            int rhs = evaluate_node(env, node->inner.binary.rhs);
+            return lhs * rhs;
+        }
+        case ND_DIV: {
+            int lhs = evaluate_node(env, node->inner.binary.lhs);
+            int rhs = evaluate_node(env, node->inner.binary.rhs);
+            return lhs / rhs;
+        }
+        case ND_MOD: {
+            int lhs = evaluate_node(env, node->inner.binary.lhs);
+            int rhs = evaluate_node(env, node->inner.binary.rhs);
+            return lhs % rhs;
+        }
         case ND_EEQ: {
             int lhs = evaluate_node(env, node->inner.binary.lhs);
             int rhs = evaluate_node(env, node->inner.binary.rhs);

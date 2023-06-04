@@ -1,4 +1,5 @@
 def triangle(length)
+    count = 2 * 2 + 5
     count = 0
     penDown()
     A:

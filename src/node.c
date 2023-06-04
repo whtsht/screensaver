@@ -8,23 +8,24 @@ Token *get_current_token() {
     return current_token;
 }
 
-Node *node_binary(Token *token, Node *(*func)(Token *), TokenKind token_kind, NodeKind node_kind) {
-    if (token_len(token) < 3) return NULL;
-    Token *lhs_ = token;
-    Token *op = lhs_->next;
-    Token *rhs_ = op->next;
-
-    if (op->kind != token_kind) return NULL;
-
-    current_token = rhs_->next;
-
-    Node *lhs = func(lhs_);
-    if (lhs == NULL) return NULL;
-    Node *rhs = node_expr(rhs_);
-    if (rhs == NULL) return NULL;
-
-    Node *node = new_node(node_kind, (InnerValue){.binary = {lhs, rhs}});
-    return node;
+// Left-to-Right Associativity
+Node *node_binary(Token *token, Node *(*func)(Token *), TokenKind token_kind[], NodeKind node_kind[], int length) {
+    Node *node = func(token);
+    while (1) {
+        Token *op = get_current_token();
+        int flag = 0;
+        for (int i = 0; i < length; i++) {
+            if (op->kind == token_kind[i]) {
+                token = op->next;
+                node = new_node(node_kind[i], (InnerValue){.binary = {node, func(token)}});
+                flag = 1;
+                break;
+            }
+        }
+        if (!flag) {
+            return node;
+        }
+    }
 }
 
 // 0: (), number, variable
@@ -32,27 +33,15 @@ Node *node_expr0(Token *token);
 
 // 1: *, /, %
 Node *node_expr1(Token *token);
-Node *node_expr1_binary(Token *token, TokenKind token_kind, NodeKind node_kind) {
-    return node_binary(token, node_expr0, token_kind, node_kind);
-}
 
 // 2: +, -
 Node *node_expr2(Token *token);
-Node *node_expr2_binary(Token *token, TokenKind token_kind, NodeKind node_kind) {
-    return node_binary(token, node_expr1, token_kind, node_kind);
-}
 
 // 3: <, <=, >, >=
 Node *node_expr3(Token *token);
-Node *node_expr3_binary(Token *token, TokenKind token_kind, NodeKind node_kind) {
-    return node_binary(token, node_expr2, token_kind, node_kind);
-}
 
 // 4: ==, !=
 Node *node_expr4(Token *token);
-Node *node_expr4_binary(Token *token, TokenKind token_kind, NodeKind node_kind) {
-    return node_binary(token, node_expr3, token_kind, node_kind);
-}
 
 Node *new_node(NodeKind kind, InnerValue inner) {
     Node *node = calloc(1, sizeof(Node));
@@ -91,22 +80,6 @@ Node *node_parens(Token *token) {
     return NULL;
 }
 
-Node *node_add(Token *token) {
-    return node_expr2_binary(token, TK_ADD, ND_ADD);
-}
-
-Node *node_sub(Token *token) {
-    return node_expr2_binary(token, TK_SUB, ND_SUB);
-}
-
-Node *node_eeq(Token *token) {
-    return node_expr4_binary(token, TK_EEQ, ND_EEQ);
-}
-
-Node *node_neq(Token *token) {
-    return node_expr4_binary(token, TK_NEQ, ND_NEQ);
-}
-
 Node *node_expr0(Token *token) {
     Node *node = NULL;
     if ((node = node_number(token))) {
@@ -122,18 +95,19 @@ Node *node_expr0(Token *token) {
 }
 
 Node *node_expr1(Token *token) {
-    return node_expr0(token);
+    return node_binary(
+        token,
+        node_expr0,
+        (TokenKind[]){TK_MUL, TK_DIV, TK_MOD},
+        (NodeKind[]){ND_MUL, ND_DIV, ND_MOD}, 3);
 }
 
 Node *node_expr2(Token *token) {
-    Node *node = NULL;
-    if ((node = node_add(token))) {
-        return node;
-    }
-    if ((node = node_sub(token))) {
-        return node;
-    }
-    return node_expr1(token);
+    return node_binary(
+        token,
+        node_expr1,
+        (TokenKind[]){TK_ADD, TK_SUB},
+        (NodeKind[]){ND_ADD, ND_SUB}, 2);
 }
 
 Node *node_expr3(Token *token) {
@@ -141,14 +115,12 @@ Node *node_expr3(Token *token) {
 }
 
 Node *node_expr4(Token *token) {
-    Node *node = NULL;
-    if ((node = node_eeq(token))) {
-        return node;
-    }
-    if ((node = node_neq(token))) {
-        return node;
-    }
-    return node_expr3(token);
+    return node_binary(
+        token,
+        node_expr3,
+        (TokenKind[]){TK_EEQ, TK_NEQ},
+        (NodeKind[]){ND_EEQ, ND_NEQ},
+        2);
 }
 
 Node *node_expr(Token *token) {

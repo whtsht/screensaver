@@ -1,0 +1,5 @@
+value = 2 * 4 + 2
+valuea = 2 + 4 * 2
+valueb = 2 * (4 + 2)
+valued = 8 / 2 - 8 % 3
+valuee = 3 * (4 - 7)
