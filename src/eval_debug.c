@@ -1,46 +1,19 @@
+#include <stdio.h>
 #include <string.h>
 
 #include "../inc/eval.h"
 
-int find_label(InstrList instr_list, char* label_name) {
-    for (int i = 0; i < instr_list.length; i++) {
-        if (instr_list.list[i]->kind == IN_LABEL) {
-            if (!strcmp(instr_list.list[i]->nodes[0]->inner.string, label_name)) {
-                return i;
-            }
-        }
-    }
-    fprintf(stderr, "label (%s) not found\n", label_name);
-    exit(1);
+void debug_print(Env* env, char* name) {
+    int value = find_var(env->vars, name);
+    printf("%d\n", value);
 }
 
-int is_builtin(char* func_name) {
+int is_builtin_debug(char* func_name) {
     return strcmp("penDown", func_name) == 0 ||
            strcmp("rotate", func_name) == 0 ||
            strcmp("forward", func_name) == 0 ||
+           strcmp("debugPrint", func_name) == 0 ||
            strcmp("penUp", func_name) == 0;
-}
-
-int find_func(InstrList instr_list, char* func_name) {
-    for (int i = 0; i < instr_list.length; i++) {
-        if (instr_list.list[i]->kind == IN_FNDEF) {
-            if (!strcmp(instr_list.list[i]->nodes[0]->inner.string, func_name)) {
-                return i;
-            }
-        }
-    }
-    fprintf(stderr, "function (%s) not found\n", func_name);
-    exit(1);
-}
-
-int find_end(InstrList instr_list, int pc) {
-    for (int i = pc; i < instr_list.length; i++) {
-        if (instr_list.list[i]->kind == IN_END) {
-            return i;
-        }
-    }
-    fprintf(stderr, "this function is not closed\n");
-    exit(1);
 }
 
 void evaluate_debug(Env* env, InstrList instr_list) {
@@ -49,13 +22,29 @@ void evaluate_debug(Env* env, InstrList instr_list) {
         switch (instr_list.list[env->pc]->kind) {
             case IN_CALL: {
                 char* name = cur_instr->nodes[0]->inner.string;
-                printf("call %s\n", name);
-                if (!is_builtin(name)) {
-                    int* point = calloc(1, sizeof(int));
-                    *point = env->pc + 1;
-                    stack_push(env->return_points, point);
-                    env->pc = find_func(instr_list, name);
+                int num_of_args = cur_instr->nodes[1]->inner.value;
+
+                // debug print
+                printf("call %s(", name);
+                for (int i = 2; i < num_of_args + 2; i++) {
+                    int value = evaluate_node(env, cur_instr->nodes[i]);
+                    char str[20];
+                    snprintf(str, 20, "%d", value);
+                    if (i != num_of_args + 1) {
+                        printf("%s ,", str);
+                    } else {
+                        printf("%s", str);
+                    }
+                }
+                printf(")\n");
+                // debug print end
+
+                if (!is_builtin_debug(name)) {
+                    enter_function(env, name, cur_instr, instr_list);
                 } else {
+                    if (!strcmp(name, "debugPrint")) {
+                        debug_print(env, cur_instr->nodes[2]->inner.string);
+                    }
                     env->pc += 1;
                 }
                 break;
@@ -115,7 +104,9 @@ void evaluate_debug(Env* env, InstrList instr_list) {
                 int* point = stack_pop(env->return_points);
                 if (point != NULL) {
                     printf("exit function\n");
+                    exit_function(env);
                     env->pc = *point;
+                    free(point);
                 } else {
                     env->pc += 1;
                 }
