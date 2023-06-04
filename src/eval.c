@@ -141,6 +141,25 @@ void exit_function(Env* env) {
     pop_scope(env->vars);
 }
 
+void debug_print(Env* env, Instr* instr) {
+    int num_of_args = instr->nodes[1]->inner.value;
+    if (num_of_args != 1) {
+        fprintf(stderr, "must have one argument (debugPrint)\n");
+        exit(0);
+    }
+    int value = evaluate_node(env, instr->nodes[2]);
+    printf("%d\n", value);
+}
+
+int is_builtin(char* func_name) {
+    return strcmp("penDown", func_name) == 0 ||
+           strcmp("rotate", func_name) == 0 ||
+           strcmp("forward", func_name) == 0 ||
+           strcmp("set", func_name) == 0 ||
+           strcmp("debugPrint", func_name) == 0 ||
+           strcmp("penUp", func_name) == 0;
+}
+
 void evaluate(Env* env, InstrList instr_list) {
     fprintf(stderr, "TODO\n");
     exit(1);

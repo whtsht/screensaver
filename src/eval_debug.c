@@ -3,20 +3,6 @@
 
 #include "../inc/eval.h"
 
-void debug_print(Env* env, char* name) {
-    int value = find_var(env->vars, name);
-    printf("%d\n", value);
-}
-
-int is_builtin_debug(char* func_name) {
-    return strcmp("penDown", func_name) == 0 ||
-           strcmp("rotate", func_name) == 0 ||
-           strcmp("forward", func_name) == 0 ||
-           strcmp("set", func_name) == 0 ||
-           strcmp("debugPrint", func_name) == 0 ||
-           strcmp("penUp", func_name) == 0;
-}
-
 void evaluate_debug(Env* env, InstrList instr_list) {
     while (env->pc < instr_list.length) {
         Instr* cur_instr = instr_list.list[env->pc];
@@ -40,11 +26,11 @@ void evaluate_debug(Env* env, InstrList instr_list) {
                 printf(")\n");
                 // debug print end
 
-                if (!is_builtin_debug(name)) {
+                if (!is_builtin(name)) {
                     enter_function(env, name, cur_instr, instr_list);
                 } else {
                     if (!strcmp(name, "debugPrint")) {
-                        debug_print(env, cur_instr->nodes[2]->inner.string);
+                        debug_print(env, cur_instr);
                     }
                     env->pc += 1;
                 }
