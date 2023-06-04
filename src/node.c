@@ -111,7 +111,12 @@ Node *node_expr2(Token *token) {
 }
 
 Node *node_expr3(Token *token) {
-    return node_expr2(token);
+    return node_binary(
+        token,
+        node_expr2,
+        (TokenKind[]){TK__GT, TK__GE, TK__LT, TK__LE},
+        (NodeKind[]){ND__GT, ND__GE, ND__LT, ND__LE},
+        4);
 }
 
 Node *node_expr4(Token *token) {

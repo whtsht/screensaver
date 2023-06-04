@@ -54,6 +54,26 @@ int evaluate_node(Env* env, Node* node) {
             int rhs = evaluate_node(env, node->inner.binary.rhs);
             return lhs != rhs;
         }
+        case ND__GT: {
+            int lhs = evaluate_node(env, node->inner.binary.lhs);
+            int rhs = evaluate_node(env, node->inner.binary.rhs);
+            return lhs > rhs;
+        }
+        case ND__GE: {
+            int lhs = evaluate_node(env, node->inner.binary.lhs);
+            int rhs = evaluate_node(env, node->inner.binary.rhs);
+            return lhs >= rhs;
+        }
+        case ND__LT: {
+            int lhs = evaluate_node(env, node->inner.binary.lhs);
+            int rhs = evaluate_node(env, node->inner.binary.rhs);
+            return lhs < rhs;
+        }
+        case ND__LE: {
+            int lhs = evaluate_node(env, node->inner.binary.lhs);
+            int rhs = evaluate_node(env, node->inner.binary.rhs);
+            return lhs <= rhs;
+        }
         default:
             fprintf(stderr, "failed to evaluate node\n");
             exit(0);

@@ -12,6 +12,7 @@ int is_builtin_debug(char* func_name) {
     return strcmp("penDown", func_name) == 0 ||
            strcmp("rotate", func_name) == 0 ||
            strcmp("forward", func_name) == 0 ||
+           strcmp("set", func_name) == 0 ||
            strcmp("debugPrint", func_name) == 0 ||
            strcmp("penUp", func_name) == 0;
 }

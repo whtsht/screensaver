@@ -132,6 +132,16 @@ void test_eval_expr() {
     test_expr(instrs.list[2]->nodes[1], 12);
     test_expr(instrs.list[3]->nodes[1], 2);
     test_expr(instrs.list[4]->nodes[1], -9);
+    test_expr(instrs.list[5]->nodes[1], 1);
+    test_expr(instrs.list[6]->nodes[1], 0);
+    test_expr(instrs.list[7]->nodes[1], 1);
+    test_expr(instrs.list[8]->nodes[1], 1);
+    test_expr(instrs.list[9]->nodes[1], 0);
+    test_expr(instrs.list[10]->nodes[1], 1);
+    test_expr(instrs.list[11]->nodes[1], 1);
+    test_expr(instrs.list[12]->nodes[1], 0);
+    test_expr(instrs.list[13]->nodes[1], 1);
+    test_expr(instrs.list[14]->nodes[1], 0);
 
     fclose(fp);
 }
